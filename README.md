@@ -1,112 +1,105 @@
-# 日本語
+# Chordia_Windows_Portable
+ここに記載されている説明はv2.0.0についてです。もし、v2.0.0がWindows_Portableの最新版でない場合は、READMEの変更があるまでお待ちください。
+
+## 注意事項
+アップデートについてはそれぞれのリリースノートをご確認ください。<br>
+互換性情報はこのReadmeの最後に記述しておりますが、具体的な引継ぎ方法はそれぞれのリリースノートをご確認ください。<br>
+原則として2つ以上のバージョンアップの場合、データの引継ぎはできません。ご注意ください。
+
 ## このアプリについて
-これはMusic Manager iOS版というiPhone専用アプリです。（iPadOSの動作確認は致しておりません。また、動作確認を行ったiPhoneはiPhone16e, iOS26.2以降です）
-v1.0.1では刷新されたデザインとともにWindows版と同様、プレイリストの楽曲を再生することができます。
-アプリ開発にはGemini 3.1 Pro Previewを利用しております。
+これはChordiaというWindowsOS専用のアプリです。iOS版の説明は[こちら](https://github.com/BellRin-squirrel/Chordia_iOS_ipa)をご確認ください。<br>
+現在、ポータブル版のみ対応しており、zipを展開してすぐに利用可能です。<br>
+アプリ内容についてですが、YouTubeなどのプラットフォームからダウンロードしたり、ご自身がお持ちのmp3ファイルを利用してお持ちの音楽を管理しつつ、プレイリストとしても機能するアプリとなっております。<br>
+おおよそオフラインでご利用いただけます。（iPhoneへ楽曲を同期する際にはインターネット環境が必要となります）<br>
+アプリ開発にはGemini 3.1 Pro Preview等を利用しております。
 
 ## すぐ使いたいならここ読んで！（アプリの起動方法、使い方）
-iPhoneに当アプリをインストールするにはMacBookまたはSideloadlyがインストールされたWindowsPCが必要となります。また、USBケーブルによるインストールとなるため、iPhoneとパソコンを接続できるUSBケーブルをご用意ください。
-（ここれはWindows版のみ説明しております。MacBook版はご自身でご確認ください。）
-iOS 26.2以降が対象です。iPadOSでは動作確認しておりません。
-iPhoneにipaファイルでアプリをインストールする方法は下記動画をご覧ください。
-YouTube - Sideload IPA with Sideloadly Wireless: Windows Guide (2025)
-※一部の国や地域では動作しない恐れがございます。予めご了承ください。
-アプリインストール後、アプリを起動し、同期タブを開きます。このとき、Windows版MusicManagerを同じWi-Fi下で起動します。
-（この際Windows版MusicManagerは正常に起動していればどの画面を開いていても構いません。のちに入力するIP Addressがわかれば問題ありません。）
-Windows版MusicManagerにてホーム画面の「iPhoneへ同期」のボタンをクリックします。（v1.0.0-beta2_Windows_Portableより搭載）
-するとIP Addressという欄に表示されている「xxx.xxx.xx.xx」の形式の文字列を「.」も含めて、iOS版MusicManagerの同期画面の一番上の入力欄に入力します。（xは文字を表しますが、文字数が表示されている通りとは限りません。）
-iOS版で「PCを探す」をタップします。この際、ローカルネットワーク上のデバイスを見つけようとしている警告が表示された場合は許可をタップしてください。2回ほどポップアップでエラーが発生しますので、もう一度「PCを探す」をタップしてください。
-するとWindows版MusicManagerのプレイリストデータが読み込まれ、iOS版にはプレイリスト一覧が表示されます。
-同期したいプレイリストにチェックを入れ、「選択したプレイリストを同期」または「楽曲をすべて同期」のボタンをタップします。選択したプレイリストはiOS版のプレイリスト一覧として表示されます。
-「選択したプレイリストを同期」をタップした場合、選択したプレイリストに含まれている楽曲のみをiPhoneにダウンロードします。
-「楽曲をすべて同期」をタップした場合、選択したプレイリストにかかわらず、Windows版MusicManagerに登録されているすべての楽曲をiPhoneにダウンロードしますが、プレイリスト一覧にはチェックを入れたプレイリストのみが表示され、ダウンロードした楽曲一覧も再生することができます。
-同期が完了するまで画面を変更しないことを推奨しております。
-同期が完了するとポップアップが表示されますのでOKをタップしましょう。これにて、楽曲の同期は完了です。Wi-Fiやモバイルデータ通信を切っても動作しますし、Windows版MusicManagerもこのタイミングで終了していただいて構いません。
-再生タブをタップすればプレイリスト一覧が表示されます。どれかタップして、再生やシャッフルのボタンをタップしてみましょう。あなたの登録した楽曲をiPhoneでも再生することができます。
+zipファイルを展開し、中のChordia.exeを実行します。Chromeが立ち上がります。<br>
+※Chromeがない場合は利用いただけません。ご了承ください。<br>
+「曲を追加」ではChordiaに曲を登録します。曲名、アーティスト、アルバムなどが設定できます。情報を入力して楽曲ファイルをアップロードしたら、「ライブラリに追加」をクリックします。<br>
+ここで追加した楽曲は「データベースを管理」の画面に表示されます。セルをダブルクリックして編集できます。試聴もできます。削除もここで可能です。<br>
+音楽をプレイリストに登録して楽しむには「音楽を再生」をクリックします。<br>
+画面を開くと既存のプレイリストが読み込まれますが、初期状態では何も登録されていません。<br>
+「プレイリスト」という文字の下の何もない個所を右クリックすると、「プレイリストを新規作成」という項目が表示されます。これをクリックしてプレイリストを作成します。<br>
+プレイリストに曲を追加するには左の追加したいプレイリスト名を右クリックします。「曲を編集」をクリックします。<br>
+ここで登録されている楽曲一覧が表示されるのでプレイリストに追加したい楽曲にチェックを入れて右下の「設定」をクリックします。<br>
+タイトル、アーティスト、アルバムなどカラムをクリックすることでソートできたり様々な機能がこの画面にはあります。詳細は下部の全機能説明をご確認ください。<br>
+そしたらプレイリストをどれかクリックして右に表示された再生ボタンやシャッフルボタンを押してみましょう。プレイリストを再生できます。
+
+## ファイル構成と起動まで
+v1.0.0-beat1の場合、ダウンロードされたzipファイルをFreesoftなどのフォルダ内で展開します。<br>
+（7-zipをご利用の場合、「ここに展開」ではなく「展開」がおすすめです。Freesoftなどのフォルダ内で展開する理由については今後の利用方法をお読みいただければおわかりいただけます。）<br>
+展開するとappフォルダとChordia.exeがあります。appフォルダは絶対に削除しないでください。再ダウンロードする以外に復元する方法はございません。<br>
+また、appフォルダとChordia.exeのディレクトリ構造を変えないでください。（appフォルダとChordia.exeをまとめて移動する場合は構いません）<br>
+Chordia.exeが本体になり、appフォルダはChordia.exeのUIを構成するものです。<br>
+Chordia.exeを実行するとlibraryフォルダとuserfilesフォルダが生成されます。<br>
+libraryフォルダにはimagesフォルダ、musicフォルダが生成されます。<br>
+userfilesフォルダにはsettings.ini（アプリ内設定の保存）が生成されます。<br>
+基本的にlibraryフォルダやuserfilesフォルダには手を加えないことを推奨します。<br>
+appフォルダはhtml, css, jsファイルが多数保存されておりますので、ご自身でデザイン変更などをすることも可能です。
 
 ## 全機能説明
-### 同期
-Windows版MusicManagerからiOS版MusicManagerに楽曲とプレイリストを同期することができます。
-ローカルIPアドレスによる接続のため、同Wi-Fi下である必要があります。
-無線のため同期速度は頗る遅いです。（改善予定ですが技術がありません）
-### 再生
-v1.0.1-beta1より再生タブを開くと、プレイリスト、アルバム、アーティストの項目と最近再生した楽曲と再生しリストが表示されます。
-プレイリストの項目を開くと、プレイリスト一覧が表示されます。一番上にはすべての楽曲というプレイリスト（？）が表示されます。
-すべての楽曲というのは同期の際に「楽曲をすべて同期」のボタンをタップした際にプレイリストにない楽曲を再生するためのものです。
-プレイリストには再生とシャッフルというボタンがありますが、Windows版と変わりません。詳細はWindows版の 全機能説明＞音楽を再生 をご確認ください。
-再生を開始すると、タブバーの上にミニプレイヤーが表示されます。アルバムアート、タイトル、アーティスト、簡易再生コントローラーが表示されています。
-ミニプレイヤーの簡易再生コントローラー以外をタップするとフルスクリーンプレイヤーの画面が開きます。
-フルスクリーンプレイヤーの画面ではタイトル、アーティスト、再生バー、再生コントローラー、歌詞表示、キュー表示が可能となっております。（歌詞表示はv1.0.0-beta2_iOSでは対応していません。）
-キュー表示をタップすると、次に再生される曲を確認することができます。（タップしてもその曲には進みません）
-この画面でシャッフル・ループ再生のトグルを変更することができます。この仕様もWindows版と同様です。
-もう一度キューのボタンをタップすることで元のアルバムアートの画面に戻ることができます。
-楽曲再生中はこのアプリ内のどの画面を開いてもミニプレイヤーが常に表示されています。
+### 曲を追加
+「曲を追加」ではChordiaに曲を登録します。曲名、アーティスト、アルバム、ジャンル、トラックナンバー、アルバムアートが設定できます。情報を入力して楽曲ファイルをアップロードしたら、「ライブラリに追加」をクリックします。
+### データベースを管理
+「データベースを管理」では登録されたすべての楽曲が表示されます。ページ分けされています。初期状態では1ページあたり50曲表示されますが、これは設定で変更可能です。また、すべて表示をすることもできます。（500曲あたりを目安に重くなり始めます）
+### エクスポート
+「エクスポート」では楽曲ファイル、アルバムアート、データベース、設定ファイル、プレイリスト・再生履歴を出力することができます。ファイル構成をそのまま引き継げるので互換性のあるバージョンの場合、エクスポートしたzipファイルを展開して、中野フォルダやファイルをすべてChordia.exeと同階層に設置することで、引き継ぐことができます。そのままのファイルで引き継げるかどうかやそのまま引き継げない場合の引き継ぎ対処法などはReleaseNoteをご確認ください。<br>
+また、エクスポート機能では保存先とファイル名を指定できます。エクスポート完了後、どこに保存されたのか再確認できます。ただし、この画面を閉じるとどこに保存したのかは二度と表示されません。<br>
+楽曲データは保存内容には著作権にも関わり、再生履歴や聞いている楽曲、プレイリストなどは個人情報の流出になりかねません。そのため、エクスポートにはパスワード保護をかけることができまあす。パスワード保護をかけると、エクスポートされたzipファイルがパスワード付きzipになります。<br>
+ただし、エクスポート機能で楽曲の項目を有効にすると楽曲ファイル数が多い場合、エクスポートにかなり時間がかかります。予めご了承ください。
+### インポート
+「インポート」では既定の形式で書かれた楽曲一覧のjsonファイルを読み込むことで楽曲のコピー、アルバムアートのコピー、mp3tag設定、データベースへの登録をすべて自動で行います。すでにほかの楽曲管理アプリをご利用の場合はこちらの方が便利かもしれません。jsonファイルの形式は言語別説明の最後の言語の下（Readmeの一番最後）をご確認ください。（import.json）<br>
+※v1.0.0-beta1ではcsv形式のインポートには対応していません。ご了承ください。
+### 音楽を再生
+「音楽を再生」ではプレイリストを作成してデータベースに登録した楽曲を再生することができます。プレイリストの作成は左の「プレイリスト」という文字の下の何もない箇所を右クリックし、「プレイリストを新規作成」をクリックします。<br>
+※もう一つの「スマートプレイリストを作成」はv1.0.0-beta1ではご利用いただけません。<br>
+プレイリスト名を編集するには左の変更したいプレイリスト名を右クリックし、「プレイリスト名を編集」をクリックします。<br>
+プレイリストを削除するには左の削除したいプレイリスト名を右クリックし、「ライブラリから削除」をクリックします。<br>
+※プレイリストの削除によって登録されている楽曲データに影響はございません。<br>
+プレイリストに登録している楽曲リストを編集するには、左の変更したいプレイリスト名を右クリックして、「曲を編集」をクリックします。「音楽を再生」の画面を開いてから初めてここをクリックすると、ここで楽曲リストの読み込みが発生します。読み込みが完了すると、楽曲リストが表示されるので、プレイリストに追加したい楽曲にチェックを入れます。<br>
+この画面ではさまざまな選択方法がございます。一つの楽曲にチェックを入れてからShiftを押しながら別の楽曲をクリックすると、一つ目にチェックを入れた楽曲から、Shiftを押しながらクリックした楽曲まで全てにチェックが入ります。<br>
+※後述するフィルターや並べ替えで一部楽曲になっている場合、表示されている楽曲においてチェックが入ります。<br>
+カラム名をクリックすると、そのカラムでソートします。もう一度クリックすると逆順になります。<br>
+検索ボックスに文字を入力すると、その文字列をmp3tagで設定されている文字列に含む楽曲だけにフィルターがかけられます。（曲が多いほど処理に時間がかかります）
+### iPhoneに同期
+新しいウィンドウが開き、PCのローカルIPアドレスが表示されます。iPhoneに同期する方法は2通りあります。
+#### IPアドレスと認証コード
+iOS版で同期タブを開き、手動で接続するという項目にWindows版に表示されているIPアドレスを入力します。<br>
+iOS版のほうでPCに接続要求というボタンをタップすると、Windows版で接続要求があるという表示がされます。<br>
+拒否をクリックすればiOS版の接続要求を拒否できます。許可をクリックすると進みます。<br>
+Windows版では認証コード6桁が表示され、iOS版はそれを入力する画面になります。iOS版でこの6桁の認証コードを入力します。<br>
+正しければWindows版に接続したiPhoneの情報が表示されます。
+#### QRコード
+iOS版で同期タブを開き、QRコードで自動接続というボタンをタップします。初めてこれを利用する場合、カメラへのアクセスを求められるので許可をタップします。<br>
+このままだとカメラ表示で何も映らないので、一度画面下のキャンセルをタップして、もう一度QRコードで自動接続というボタンをタップします。<br>
+するとカメラが移るのでこのカメラでWindows版の方で「QRコードを表示」をクリックして表示されるQRコードを読み取ります。カメラに映ると自動で続行されます。<br>
+Windows版で接続用きゅが表示されるので許可をクリックします。
+#### 接続できたら
+接続できたらiOS版の方で同期したいプレイリストを選択して、同期することができます。<br>
+接続されているデバイスはWindows版の方で管理でき、怪しいデバイスがあれば強制切断することができます。<br>
+また、このウィンドウを開いている間にのみ、iPhoneとPCの接続ができ、同期をすることができます。ウィンドウを閉じると、iOS版の同期途中の楽曲はすべて削除されます。
+### 拡張機能
+動画プラットフォームから動画をダウンロードして楽曲として追加するにはこの拡張機能の画面に表示されるすべてのツールが必要になります。<br>
+ダウンロードすると動画プラットフォームから動画をダウンロードして楽曲として追加できるようになります。
 ### 設定
-テーマカラーを現在は設定できます。
-一番右下の色をタップすると色をカスタム設定できます。また、あなたが設定した色は最近使用した５色までアプリが覚えてくれます。
+アプリの設定を変更することができます。変更すると便利になるかもしれません。
 ### 情報
-ライセンス表記とバージョン表記となります。万が一、ダウンロードしたバージョンとこの表記が違う場合は、お問い合わせください。
+ライセンス表記とバージョン情報が表示されます。<br>
+ここに表示されるバージョン情報がGitHubからダウンロードしたバージョンと異なる場合はDiscussionsなどにコメントいただけると幸いです。
 
-## 内部システム
-同期についてですが、Windows版MusicManagerを輝度すると自動的にFlaskサーバーが起動するので、それにローカルIPアドレスにより接続し、楽曲を同期しています。また、Windows版MusicManagerを終了するとFlaskサーバーも終了してしまうため、起動しておかないと、同期することはできません。
+## Windows版とiOS版の互換性
+|Win - iOS|v1.0.0|v1.0.1|v2.0.0 #1|v2.0.0|v2.1.0 #1|
+|:-|:-:|:-:|:-:|:-:|:-:|
+|v1.0.0-beta1|$$〇^{※1,2}$$|$$〇^{※1,2}$$|$$×^{※4}$$|$$×^{※4}$$|$$×^{※4}$$|
+|v1.0.0-beta2|$$〇^{※2}$$|$$〇^{※2}$$|$$×^{※4}$$|$$×^{※4}$$|$$×^{※4}$$|
+|v1.0.0-beta3|〇|〇|$$×^{※4}$$|$$×^{※4}$$|$$×^{※4}$$|
+|v1.0.0|〇|〇|$$×^{※4}$$|$$×^{※4}$$|$$×^{※4}$$|
+|v2.0.0 #1|$$×^{※4}$$|$$×^{※4}$$|〇|〇|〇|
+|v2.0.0|$$×^{※4}$$|$$×^{※4}$$|〇|〇|〇|
 
-## 今後の開発予定
-- スマートプレイリスト
-- 楽曲 / プレイリスト削除機能
-
--- これは原文です --
-
-
-# English
-## About This App
-This is Music Manager for iOS, an app designed exclusively for the iPhone. (We have not tested this app on iPadOS. The iPhone models tested were the iPhone 16e running iOS 26.2 or later.)
-In version 1.0.1, the app features a redesigned interface and, like the Windows version, allows you to play songs from playlists.
-This app was developed using Gemini 3.1 Pro Preview.
-
-## Read this if you want to get started right away! (How to launch and use the app)
-To install this app on your iPhone, you’ll need a MacBook or a Windows PC with Sideloadly installed. Since the installation requires a USB cable, please make sure you have a USB cable that can connect your iPhone to your computer.
-(This guide covers the Windows version only. Please check the MacBook version yourself.)
-Compatible with iOS 26.2 and later. We have not verified compatibility with iPadOS.
-Please watch the video below to learn how to install the app on your iPhone using an IPA file.
-YouTube - Sideload IPA with Sideloadly Wireless: Windows Guide (2025)
-*Please note that this may not work in some countries or regions.
-After installing the app, launch it and open the Sync tab. At this point, launch the Windows version of MusicManager while connected to the same Wi-Fi network.
-(As long as the Windows version of MusicManager is running normally, it doesn’t matter which screen is open. You just need to be able to find the IP Address to enter later.)
-In the Windows version of MusicManager, click the “Sync to iPhone” button on the Home screen. (Available starting from v1.0.0-beta2_Windows_Portable)
-Then, enter the string displayed in the “IP Address” field in the format “xxx.xxx.xx.xx”—including the “.”—into the top input field on the Sync screen of the iOS version of MusicManager. (The “x” represents characters, but the number of characters may not match what is displayed.)
-In the iOS version, tap “Find My PC.” If a warning appears stating that the app is trying to locate devices on your local network, tap “Allow.” You’ll see an error pop-up about twice, so tap “Find My PC” again.
-The playlist data from the Windows version of MusicManager will then be loaded, and a list of playlists will appear in the iOS version.
-Check the playlists you want to sync, then tap the “Sync Selected Playlists” or “Sync All Songs” button. The selected playlists will appear in the iOS app’s playlist list.
-If you tap “Sync Selected Playlists,” only the songs included in the selected playlists will be downloaded to your iPhone.
-If you tap “Sync All Songs,” all songs registered in the Windows version of MusicManager will be downloaded to your iPhone, regardless of the selected playlists. However, only the checked playlists will appear in the playlist list, and you can play the downloaded songs.
-We recommend that you do not switch screens until synchronization is complete.
-When synchronization is complete, a pop-up will appear; tap “OK.” This completes the song synchronization. It will continue to work even if you turn off Wi-Fi or mobile data, and you may close the Windows version of MusicManager at this point.
-Tap the “Play” tab to view the playlist list. Tap any playlist and try tapping the ‘Play’ or “Shuffle” buttons. You can now play the songs you've registered on your iPhone.
-
-## Full Feature Description
-### Sync
-You can sync songs and playlists from the Windows version of MusicManager to the iOS version of MusicManager.
-Since the connection uses local IP addresses, both devices must be on the same Wi-Fi network.
-Because it’s a wireless connection, the sync speed is quite slow. (We plan to improve this, but currently lack the technical capability.)
-### Playback
-Starting with v1.0.1-beta1, opening the Playback tab displays sections for Playlists, Albums, and Artists, along with Recently Played tracks and the Playlist.
-Opening the Playlists section displays a list of playlists. At the very top, you’ll see a playlist labeled “All Songs.”
-“All Songs” is intended for playing tracks that aren’t in any playlist when you tap the “Sync All Songs” button during synchronization.
-The Playlist section includes Play and Shuffle buttons, which function the same as in the Windows version. For details, please refer to the Windows version’s “Full Feature Guide > Play Music.”
-When playback begins, a mini-player appears above the tab bar. It displays the album art, title, artist, and a simple playback controller.
-Tapping anywhere on the mini-player except the simple playback controller opens the full-screen player.
-The full-screen player screen allows you to view the title, artist, progress bar, playback controls, lyrics, and the queue. (Lyrics are not supported in v1.0.0-beta2_iOS.)
-Tapping the queue display lets you see the next song in the queue. (Tapping it does not skip to that song.)
-You can toggle shuffle and loop playback on this screen. This feature is the same as in the Windows version.
-Tapping the queue button again will return you to the original album art screen.
-While a song is playing, the mini-player will always be displayed, regardless of which screen you open within the app.
-### Settings
-You can currently set the theme color.
-Tap the color in the bottom-right corner to customize it. The app will also remember up to the five most recently used colors you’ve set.
-### About
-This section displays the license and version information. If the version displayed here differs from the version you downloaded, please contact us.
-
-## Internal System
-Regarding synchronization: When you launch the Windows version of MusicManager, the Flask server starts automatically. The app connects to this server via your local IP address to synchronize songs. Note that the Flask server shuts down when you close the Windows version of MusicManager, so synchronization will not work unless the server is running.
-
--- Translated by deepl.com --
+vx.y.z #wとはvx.y.z-beta wを意味します。（例えばv2.0.0 #1はv2.0.0-beta1を意味します）<br>
+※1 iPhoneに同期という項目がないため、PCのIPアドレスはご自身で調べていただく必要がございます。コマンドプロンプトを起動し、「ipconfig」を実行するとPCのIPアドレスを調べることができます。<br>
+※2 v1.0.0-beta3_iOSは歌詞同期・歌詞表示に対応していますが、v1.0.0-beta1_Windowsやv1.0.0-beta2_Windowsから同期することはできません。<br>
+※3 v1.0.0-beta1_iOS, v1.0.0-beta2_iOSは歌詞同期・歌詞表示に対応していないため、Windows版から歌詞を同期したり、歌詞を表示したりすることができません。<br>
+※4 v2.0.0-beta1_iOS_ipa, v2.0.0-beta1_Windows_Portableでは同期の際のセキュリティを向上させたため、それ以前のバージョンと同期することができません。
