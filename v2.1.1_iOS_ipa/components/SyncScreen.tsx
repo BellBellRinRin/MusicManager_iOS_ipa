@@ -1,13 +1,23 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator, Modal, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator, Modal, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard, ScrollView, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView } from 'expo-camera';
 import { styles } from '../styles/styles';
 
 export const SyncScreen = ({ dynamicStyles, themeColor, syncStage, setSyncStage, serverIp, setServerIp, authCodeInput, setAuthCodeInput, showCamera, setShowCamera, requestCameraPermission, pcPlaylists, selectedPls, setSelectedPls, isSyncing, isDark, requestAuthToPC, verifyAuthCode, startSyncDownload, cancelSync, disconnect, setScannedQrData, clientInfo, insets, currentSong }: any) => {
 
-  // ★ 再生中のミニプレイヤーとタブバーを避けるための底上げパディング
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   const bottomPadding = currentSong ? 280 : 160;
+
+  const selectAll = () => {
+    const allIndices = new Set(pcPlaylists.map((_, i) => i));
+    setSelectedPls(allIndices);
+  };
+
+  const deselectAll = () => {
+    setSelectedPls(new Set());
+  };
 
   return (
     <View style={{flex:1, backgroundColor: dynamicStyles.bg}}>
@@ -66,30 +76,69 @@ export const SyncScreen = ({ dynamicStyles, themeColor, syncStage, setSyncStage,
 
       {syncStage === 'READY' && (
         <View style={{flex: 1}}>
-          <View style={{paddingHorizontal: 20, paddingTop: 10}}>
-             <TouchableOpacity 
-                style={[
-                    styles.smallBtn, 
-                    { backgroundColor: '#6b7280', height: 50, justifyContent: 'center', borderRadius: 25, paddingVertical: 0 }
-                ]} 
-                onPress={disconnect}
-             >
-                <Text style={styles.btnText}>接続を解除</Text>
-             </TouchableOpacity>
-          </View>
           <FlatList 
             data={pcPlaylists} 
             keyExtractor={(item, index) => item.playlistName + index} 
-            contentContainerStyle={{paddingBottom: bottomPadding, paddingTop: 10}} 
+            numColumns={isLandscape ? 2 : 1}
+            key={isLandscape ? 'grid' : 'list'}
+            contentContainerStyle={{paddingBottom: bottomPadding, paddingTop: 10, paddingHorizontal: isLandscape ? 10 : 0}} 
+            // ★ 修正: HeaderComponentに操作ボタンを移動し、スクロール可能にする
+            ListHeaderComponent={
+                <View style={{paddingHorizontal: 20, paddingBottom: 10, gap: 10}}>
+                   <TouchableOpacity 
+                      style={[styles.smallBtn, { backgroundColor: '#6b7280' }]} 
+                      onPress={disconnect}
+                   >
+                      <Text style={styles.btnText}>接続を解除</Text>
+                   </TouchableOpacity>
+
+                   <View style={{ flexDirection: 'row', gap: 10 }}>
+                      <TouchableOpacity 
+                          style={[styles.smallBtn, { backgroundColor: isDark ? '#2c2c2e' : '#e5e7eb', flex: 1, height: 40 }]} 
+                          onPress={selectAll}
+                      >
+                          <Text style={{ color: dynamicStyles.text, fontWeight: 'bold' }}>すべて選択</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                          style={[styles.smallBtn, { backgroundColor: isDark ? '#2c2c2e' : '#e5e7eb', flex: 1, height: 40 }]} 
+                          onPress={deselectAll}
+                      >
+                          <Text style={{ color: dynamicStyles.text, fontWeight: 'bold' }}>選択解除</Text>
+                      </TouchableOpacity>
+                   </View>
+                </View>
+            }
             renderItem={({item, index}) => (
-              <TouchableOpacity style={[styles.checkRow, {backgroundColor: dynamicStyles.bg}]} onPress={() => { const next = new Set(selectedPls); if (next.has(index)) next.delete(index); else next.add(index); setSelectedPls(next); }}>
-                <Ionicons name={selectedPls.has(index) ? "checkbox" : "square-outline"} size={24} color={themeColor} /><Text style={[styles.rowTitle, {color: dynamicStyles.text}]}>{item.playlistName}</Text>
+              <TouchableOpacity 
+                style={[
+                    styles.checkRow, 
+                    {backgroundColor: dynamicStyles.bg},
+                    isLandscape && { flex: 0.5, margin: 5, borderRadius: 10, borderWidth: 0.5, borderColor: dynamicStyles.border }
+                ]} 
+                onPress={() => { const next = new Set(selectedPls); if (next.has(index)) next.delete(index); else next.add(index); setSelectedPls(next); }}
+              >
+                <Ionicons name={selectedPls.has(index) ? "checkbox" : "square-outline"} size={24} color={themeColor} />
+                <Text style={[styles.rowTitle, {color: dynamicStyles.text}]} numberOfLines={1}>{item.playlistName}</Text>
               </TouchableOpacity>
             )}
             ListFooterComponent={pcPlaylists.length > 0 ? (
-                    <View style={styles.syncFooterContainer}>
-                        <TouchableOpacity style={[styles.syncActionBtn, {backgroundColor: themeColor}]} onPress={() => startSyncDownload(false)}><Text style={styles.syncActionBtnText}>選択したプレイリストを同期</Text></TouchableOpacity>
-                        <TouchableOpacity style={[styles.syncActionBtn, {backgroundColor: '#6b7280'}]} onPress={() => startSyncDownload(true)}><Text style={styles.syncActionBtnText}>楽曲をすべて同期</Text></TouchableOpacity>
+                    <View style={[
+                        styles.syncFooterContainer,
+                        // ★ 修正: 横画面ならボタンを横並びにする
+                        isLandscape && { flexDirection: 'row', justifyContent: 'center', gap: 15 }
+                    ]}>
+                        <TouchableOpacity 
+                            style={[styles.syncActionBtn, {backgroundColor: themeColor, flex: isLandscape ? 1 : 0}]} 
+                            onPress={() => startSyncDownload(false)}
+                        >
+                            <Text style={styles.syncActionBtnText}>選択した項目を同期</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={[styles.syncActionBtn, {backgroundColor: '#6b7280', flex: isLandscape ? 1 : 0}]} 
+                            onPress={() => startSyncDownload(true)}
+                        >
+                            <Text style={styles.syncActionBtnText}>すべて同期</Text>
+                        </TouchableOpacity>
                     </View>
                 ) : null
             }

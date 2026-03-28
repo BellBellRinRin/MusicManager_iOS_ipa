@@ -51,17 +51,24 @@ export const styles = StyleSheet.create({
   plMainBtnText: { fontSize: 16, fontWeight: 'bold' },
   syncCard: { padding: 20, borderRadius: 16 },
   input: { padding: 14, borderRadius: 12, marginBottom: 12, fontSize: 16 },
-  smallBtn: { padding: 14, borderRadius: 12, alignItems: 'center' },
+  
+  smallBtn: { 
+    height: 50, 
+    borderRadius: 25, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  
   btnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   checkRow: { flexDirection: 'row', padding: 16, alignItems: 'center' },
-  rowTitle: { marginLeft: 15, fontWeight: '600' },
+  rowTitle: { marginLeft: 15, fontWeight: '600', flex: 1 }, // 2列表示用にflex指定
   playlistIconArt: { width: 70, height: 70, borderRadius: 10 },
   songRow: { flexDirection: 'row', padding: 12, paddingHorizontal: 20, alignItems: 'center' },
   smallArt: { width: 48, height: 48, borderRadius: 8, marginRight: 15 },
   songTitle: { fontSize: 16, fontWeight: '600' },
   songSub: { fontSize: 13, marginTop: 2 },
   
-  // 縦画面用の共通位置決めスタイル
   commonWrapperPortrait: {
     position: 'absolute',
     left: SIDE_MARGIN,
@@ -71,6 +78,9 @@ export const styles = StyleSheet.create({
     pointerEvents: 'box-none',
   },
 
+  tabBarWrapper: { 
+    position: 'absolute', left: SIDE_MARGIN, right: SIDE_MARGIN, alignItems: 'center' 
+  },
   tabBarContainer: { 
     width: '100%', maxWidth: 800, height: TAB_BAR_HEIGHT, 
     borderRadius: 29, 
@@ -164,8 +174,19 @@ export const styles = StyleSheet.create({
   divider: { width: 40, height: 2, marginVertical: 20 },
   copyrightLabel: { fontSize: 15, fontWeight: '600' },
   syncFooterContainer: { padding: 20, gap: 12, paddingBottom: 100, maxWidth: 600, alignSelf: 'center', width: '100%' },
-  syncActionBtn: { padding: 16, borderRadius: 14, alignItems: 'center', shadowOpacity: 0.1, shadowRadius: 5, elevation: 2 },
+  
+  // ★ 修正: syncActionBtnを完全なカプセル型に
+  syncActionBtn: { 
+    height: 50, 
+    borderRadius: 25, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    shadowOpacity: 0.1, 
+    shadowRadius: 5, 
+    elevation: 2 
+  },
   syncActionBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+
   colorPreset: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   rgbModalContent: { width: '85%', maxWidth: 400, padding: 25, borderRadius: 25, overflow: 'hidden' },

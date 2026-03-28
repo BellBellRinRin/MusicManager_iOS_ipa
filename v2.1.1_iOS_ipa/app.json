@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "MusicManager",
-    "slug": "MusicManager",
+    "name": "Chordia",
+    "slug": "Chordia",
     "version": "2.0.0",
     "backgroundColor": "#ffffff",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
-    "scheme": "musicmanagerios",
+    "scheme": "Chordiaios",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "bundleIdentifier": "com.bellrin.musicmanager",
+      "bundleIdentifier": "com.bellrin.chordia",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.bellrin.musicmanager",
+      "package": "com.bellrin.chordia",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

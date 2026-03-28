@@ -163,7 +163,7 @@ const AppContent = () => {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 25 }}>
               <View style={[styles.licenseCard, { backgroundColor: actualDynamicStyles.card }]}>
                 <Text style={[styles.appNameLabel, { color: actualDynamicStyles.text }]}>Chordia iOS版</Text>
-                <Text style={styles.appVersionLabel}>v2.1.0</Text>
+                <Text style={styles.appVersionLabel}>v2.1.1</Text>
                 <View style={[styles.divider, { backgroundColor: actualDynamicStyles.bg }]} />
                 <Text style={[styles.copyrightLabel, { color: actualDynamicStyles.text }]}>© 2026 BellRin</Text>
               </View>
