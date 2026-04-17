@@ -2,11 +2,11 @@
   "expo": {
     "name": "Chordia",
     "slug": "Chordia",
-    "version": "2.0.0",
+    "version": "3.0.2",
     "backgroundColor": "#ffffff",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
-    "scheme": "Chordiaios",
+    "scheme": "chordia",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -16,11 +16,19 @@
         "UIBackgroundModes": [
           "audio"
         ],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        "NSLocalNetworkUsageDescription": "PC上の音楽ライブラリと同期するためにローカルネットワークを使用します。"
       }
     },
     "android": {
       "package": "com.bellrin.chordia",
+      "permissions": [
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

@@ -10,7 +10,7 @@ const DEFAULT_ICON = require('../assets/images/icon.png');
 const MarqueeText = ({ text, style, containerWidth }: { text: string, style: any, containerWidth: number }) => {
   const scrollAnim = useRef(new Animated.Value(0)).current;
   const [textWidth, setTextWidth] = useState(0);
-  const [shouldScroll, setShouldScroll] = useState(false);
+  const[shouldScroll, setShouldScroll] = useState(false);
 
   useEffect(() => {
     if (textWidth > containerWidth && containerWidth > 0) {
@@ -20,7 +20,7 @@ const MarqueeText = ({ text, style, containerWidth }: { text: string, style: any
       setShouldScroll(false);
       scrollAnim.setValue(0);
     }
-  }, [text, textWidth, containerWidth]);
+  },[text, textWidth, containerWidth]);
 
   const startAnimation = () => {
     scrollAnim.setValue(0);
@@ -42,7 +42,7 @@ const MarqueeText = ({ text, style, containerWidth }: { text: string, style: any
 
   return (
     <View style={{ width: containerWidth, overflow: 'hidden' }}>
-      <Animated.View style={{ flexDirection: 'row', transform: [{ translateX: scrollAnim }] }}>
+      <Animated.View style={{ flexDirection: 'row', transform:[{ translateX: scrollAnim }] }}>
         <Text style={style} onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)} numberOfLines={1}>{text}</Text>
         {shouldScroll && <Text style={[style, { marginLeft: 40 }]}>{text}</Text>}
       </Animated.View>
@@ -52,8 +52,8 @@ const MarqueeText = ({ text, style, containerWidth }: { text: string, style: any
 
 export const FullScreenPlayer = ({ 
   dynamicStyles, themeColor, currentSong, isPlaying, playbackStatus, sound, 
-  playQueue, currentIndex, loopMode, isShuffle, showQueue, showLyrics, 
-  setLoopMode, setIsShuffle, setShowQueue, setShowLyrics, 
+  playQueue, loopMode, isShuffle, showQueue, showLyrics, 
+  toggleLoopMode, toggleShuffleMode, setShowQueue, setShowLyrics, // ★ 修正: 新しいトグル関数を受け取る
   handlePrev, togglePlayPause, handleNext, 
   slideAnim, queueTransitionAnim, closeFullPlayer,
   toastVisible, toastMessage, toastAnim, showToast 
@@ -68,7 +68,7 @@ export const FullScreenPlayer = ({
     const toValue = (showLyrics || showQueue) ? 1 : 0;
     Animated.spring(transitionAnim, {
       toValue,
-      useNativeDriver: false, // ★ 修正: width/heightのアニメーションがあるため false に戻す
+      useNativeDriver: false,
       friction: 8,
       tension: 40
     }).start();
@@ -111,16 +111,17 @@ export const FullScreenPlayer = ({
 
   const renderQueueToggles = () => (
     <View style={[styles.queueTogglesWrapper, { marginBottom: 15 }]}>
-      <TouchableOpacity style={[styles.toggleBtnSplit, styles.toggleLeft, { backgroundColor: isShuffle ? themeColor : 'rgba(255,255,255,0.1)' }]} onPress={() => setIsShuffle(!isShuffle)}><Ionicons name="shuffle" size={24} color="#fff" /></TouchableOpacity>
+      {/* ★ 修正: 新しいトグル関数を呼び出す */}
+      <TouchableOpacity style={[styles.toggleBtnSplit, styles.toggleLeft, { backgroundColor: isShuffle ? themeColor : 'rgba(255,255,255,0.1)' }]} onPress={toggleShuffleMode}><Ionicons name="shuffle" size={24} color="#fff" /></TouchableOpacity>
       <View style={styles.toggleDivider} />
-      <TouchableOpacity style={[styles.toggleBtnSplit, styles.toggleRight, { backgroundColor: loopMode !== 'OFF' ? themeColor : 'rgba(255,255,255,0.1)' }]} onPress={() => { const modes = ['OFF', 'ALL', 'ONE']; setLoopMode(modes[(modes.indexOf(loopMode) + 1) % 3]); }}><Ionicons name={loopMode === 'ONE' ? "repeat-outline" : "repeat"} size={24} color="#fff" />{loopMode === 'ONE' && <Text style={styles.oneBadgeInline}>1</Text>}</TouchableOpacity>
+      <TouchableOpacity style={[styles.toggleBtnSplit, styles.toggleRight, { backgroundColor: loopMode !== 'OFF' ? themeColor : 'rgba(255,255,255,0.1)' }]} onPress={toggleLoopMode}><Ionicons name={loopMode === 'ONE' ? "repeat-outline" : "repeat"} size={24} color="#fff" />{loopMode === 'ONE' && <Text style={styles.oneBadgeInline}>1</Text>}</TouchableOpacity>
     </View>
   );
 
   const mainOpacity = transitionAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
-  const subViewOpacity = transitionAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
+  const subViewOpacity = transitionAnim.interpolate({ inputRange:[0, 0.5, 1], outputRange: [0, 0, 1] });
   const mainTranslateX = transitionAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -30] });
-  const subViewTranslateX = transitionAnim.interpolate({ inputRange: [0, 1], outputRange: [30, 0] });
+  const subViewTranslateX = transitionAnim.interpolate({ inputRange: [0, 1], outputRange:[30, 0] });
 
   let contentLayout;
   if (isLandscape) {
@@ -153,7 +154,8 @@ export const FullScreenPlayer = ({
         <View style={{ flex: 1, overflow: 'hidden' }}>
           <Animated.View style={[StyleSheet.absoluteFill, { padding: 20, opacity: mainOpacity, transform: [{ translateX: mainTranslateX }] }]} pointerEvents={showLyrics ? 'none' : 'auto'}>
             {renderQueueToggles()}
-            <FlatList data={playQueue.slice(currentIndex + 1)} keyExtractor={(item, index) => 'queue-h-' + index} renderItem={({item}) => (
+            {/* ★ 修正: playQueueそのものをデータとして渡す */}
+            <FlatList data={playQueue} keyExtractor={(item, index) => 'queue-h-' + index} renderItem={({item}) => (
                 <View style={styles.songRowQueue}>
                     <Image source={item.localImageUri ? {uri: item.localImageUri} : DEFAULT_ICON} style={styles.smallArtQueue} />
                     <View style={{flex:1}}><Text style={{color: '#fff', fontWeight: 'bold'}} numberOfLines={1}>{item.title}</Text><Text style={{color: '#aaa'}} numberOfLines={1}>{item.artist}</Text></View>
@@ -161,16 +163,23 @@ export const FullScreenPlayer = ({
             )} />
           </Animated.View>
           <Animated.View style={[StyleSheet.absoluteFill, { padding: 20, opacity: subViewOpacity, transform: [{ translateX: subViewTranslateX }] }]} pointerEvents={showLyrics ? 'auto' : 'none'}>
-            <ScrollView style={styles.lyricsScrollView} contentContainerStyle={{ paddingBottom: 30 }}><Text style={styles.lyricsText}>{currentSong?.lyric}</Text></ScrollView>
+            {currentSong?.lyric?.trim() ? (
+                <ScrollView style={styles.lyricsScrollView} contentContainerStyle={{ paddingBottom: 30 }}>
+                    <Text style={styles.lyricsText}>{currentSong?.lyric}</Text>
+                </ScrollView>
+            ) : (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={[styles.lyricsText, { opacity: 0.5, textAlign: 'center' }]}>歌詞が登録されていません</Text>
+                </View>
+            )}
           </Animated.View>
         </View>
       </View>
     );
   } else {
-    // ★ 修正: 縦画面は width, height を直接アニメーションさせる美しい仕様に戻す
     const artSizeBig = width * 0.8;
     const artSizeSmall = 60;
-    const artSizeAnim = transitionAnim.interpolate({ inputRange: [0, 1], outputRange: [artSizeBig, artSizeSmall] });
+    const artSizeAnim = transitionAnim.interpolate({ inputRange: [0, 1], outputRange:[artSizeBig, artSizeSmall] });
     const artRadiusAnim = transitionAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 8] });
 
     contentLayout = (
@@ -208,14 +217,23 @@ export const FullScreenPlayer = ({
                 </View>
             </Animated.View>
 
-            <Animated.View style={[StyleSheet.absoluteFill, { opacity: subViewOpacity, transform: [{ translateX: subViewTranslateX }] }]} pointerEvents={(showLyrics || showQueue) ? 'auto' : 'none'}>
+            <Animated.View style={[StyleSheet.absoluteFill, { opacity: subViewOpacity, transform:[{ translateX: subViewTranslateX }] }]} pointerEvents={(showLyrics || showQueue) ? 'auto' : 'none'}>
                 <View style={[styles.queueViewArea, { paddingHorizontal: 20 }]}>
                     { showLyrics ? (
-                        <ScrollView style={styles.lyricsScrollView} contentContainerStyle={{ paddingBottom: 30 }}><Text style={styles.lyricsText}>{currentSong?.lyric}</Text></ScrollView>
+                        currentSong?.lyric?.trim() ? (
+                            <ScrollView style={styles.lyricsScrollView} contentContainerStyle={{ paddingBottom: 30 }}>
+                                <Text style={styles.lyricsText}>{currentSong?.lyric}</Text>
+                            </ScrollView>
+                        ) : (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={[styles.lyricsText, { opacity: 0.5, textAlign: 'center' }]}>歌詞が登録されていません</Text>
+                            </View>
+                        )
                     ) : (
                         <>
                             {renderQueueToggles()}
-                            <FlatList data={playQueue.slice(currentIndex + 1)} keyExtractor={(item, index) => 'queue-v-' + index} renderItem={({item}) => (
+                            {/* ★ 修正: playQueueそのものをデータとして渡す */}
+                            <FlatList data={playQueue} keyExtractor={(item, index) => 'queue-v-' + index} renderItem={({item}) => (
                                 <View style={styles.songRowQueue}>
                                     <Image source={item.localImageUri ? {uri: item.localImageUri} : DEFAULT_ICON} style={styles.smallArtQueue} />
                                     <View style={{flex:1}}><Text style={{color: '#fff', fontWeight: 'bold'}} numberOfLines={1}>{item.title}</Text><Text style={{color: '#aaa'}} numberOfLines={1}>{item.artist}</Text></View>
@@ -243,7 +261,7 @@ export const FullScreenPlayer = ({
           <View style={styles.swipeArea} {...panResponder.panHandlers}><View style={styles.fullPlayerHandle} /></View>
           {contentLayout}
           {toastVisible && (
-              <Animated.View style={[styles.toastContainer, { opacity: toastAnim, transform: [{ translateY: toastAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }]}>
+              <Animated.View style={[styles.toastContainer, { opacity: toastAnim, transform: [{ translateY: toastAnim.interpolate({ inputRange:[0, 1], outputRange: [20, 0] }) }] }]}>
                   <BlurView intensity={50} tint="dark" style={styles.toastBlur}><Text style={styles.toastText}>{toastMessage}</Text></BlurView>
               </Animated.View>
           )}

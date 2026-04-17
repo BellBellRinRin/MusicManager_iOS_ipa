@@ -1,4 +1,4 @@
-name: Build iOS IPA for Sideloadly v2.1.1
+name: Build iOS IPA for Sideloadly v2.1.2
 on:
   workflow_dispatch: # 手動実行ボタンを有効化
 

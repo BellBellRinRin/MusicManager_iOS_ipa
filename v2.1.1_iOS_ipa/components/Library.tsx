@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, Text, FlatList, Image, TouchableOpacity, Animated, 
-  StyleSheet, TouchableWithoutFeedback, PanResponder, useWindowDimensions 
+  StyleSheet, TouchableWithoutFeedback, PanResponder, useWindowDimensions, TextInput, Keyboard 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
@@ -9,10 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../styles/styles';
 import { RecentSection } from './RecentSection';
 
-// ★ 修正: 正しい相対パスを指定
 const DEFAULT_ICON = require('../assets/images/icon.png');
 
-const LIBRARY_MENU_ITEMS = [
+const LIBRARY_MENU_ITEMS =[
   { title: 'プレイリスト', icon: 'musical-notes-outline' as const, view: 'PLAYLISTS' },
   { title: 'アルバム', icon: 'disc-outline' as const, view: 'ALBUMS' },
   { title: 'アーティスト', icon: 'mic-outline' as const, view: 'ARTISTS' },
@@ -22,25 +21,31 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
-  const [navStack, setNavStack] = useState<string[]>(['MENU']);
+  const[navStack, setNavStack] = useState<string[]>(['MENU']);
   const navAnim = useRef(new Animated.Value(0)).current;
   const isNavAnimating = useRef(false);
   const backButtonScale = useRef(new Animated.Value(1)).current;
 
   const panX = useRef(new Animated.Value(0)).current;
 
-  const [recentlyPlayedSongs, setRecentlyPlayedSongs] = useState<any[]>([]);
-  const [recentlyPlayedCollections, setRecentlyPlayedCollections] = useState<any[]>([]);
+  const[recentlyPlayedSongs, setRecentlyPlayedSongs] = useState<any[]>([]);
+  const[recentlyPlayedCollections, setRecentlyPlayedCollections] = useState<any[]>([]);
   
   const [currentSelectionType, setCurrentSelectionType] = useState<string | null>(null);
-  const [currentPlaylist, setCurrentPlaylist] = useState<any>(null);
-  const [currentAlbum, setCurrentAlbum] = useState<any>(null);
+  const[currentPlaylist, setCurrentPlaylist] = useState<any>(null);
+  const[currentAlbum, setCurrentAlbum] = useState<any>(null);
   const [currentArtist, setCurrentArtist] = useState<string | null>(null);
   const [albumsList, setAlbumsList] = useState<any[]>([]);
-  const [artistsList, setArtistsList] = useState<any[]>([]);
+  const[artistsList, setArtistsList] = useState<any[]>([]);
 
-  const [listBackgroundArt, setListBackgroundArt] = useState<any>(null);
+  const[listBackgroundArt, setListBackgroundArt] = useState<any>(null);
   const listBgOpacity = useRef(new Animated.Value(0)).current;
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const[isSearching, setIsSearching] = useState(false);
+
+  const flatListRefPortrait = useRef<FlatList>(null);
+  const flatListRefLandscape = useRef<FlatList>(null);
 
   useEffect(() => {
     if (setNavStackLength) {
@@ -54,14 +59,14 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
     const artMap = new Map();
     localLibrary.forEach((s: any) => {
       const ak = `${s.album}:::${s.artist}`;
-      if(!aMap.has(ak)) aMap.set(ak, {album: s.album, artist: s.artist, songs: []});
+      if(!aMap.has(ak)) aMap.set(ak, {album: s.album, artist: s.artist, songs:[]});
       aMap.get(ak).songs.push(s);
-      if(!artMap.has(s.artist)) artMap.set(s.artist, []);
+      if(!artMap.has(s.artist)) artMap.set(s.artist,[]);
       artMap.get(s.artist).push(s);
     });
     setAlbumsList(Array.from(aMap.values()).map(a => ({...a, coverArt: [...a.songs].sort((x:any,y:any)=>(x.title||'').localeCompare(y.title||'','ja'))[0]?.localImageUri})));
     setArtistsList(Array.from(artMap.entries()).map(([n, ss]) => ({artistName: n, coverArt: [...(ss as any[])].sort((x:any,y:any)=>(x.title||'').localeCompare(y.title||'','ja'))[0]?.localImageUri})));
-  }, [localLibrary]);
+  },[localLibrary]);
 
   useEffect(() => {
     loadHistory();
@@ -73,7 +78,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [listBackgroundArt]);
+  },[listBackgroundArt]);
 
   useEffect(() => {
     if (navStack.length === 3) {
@@ -91,10 +96,16 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
       } else {
         setListBackgroundArt(null);
       }
+
+      setTimeout(() => {
+        flatListRefPortrait.current?.scrollToOffset({ offset: 60, animated: false });
+        flatListRefLandscape.current?.scrollToOffset({ offset: 60, animated: false });
+      }, 50);
+
     } else {
       setListBackgroundArt(null);
     }
-  }, [navStack, currentSelectionType, currentPlaylist, currentAlbum, currentArtist, artistsList]);
+  },[navStack, currentSelectionType, currentPlaylist, currentAlbum, currentArtist, artistsList]);
 
   const loadHistory = async () => {
     const rs = await AsyncStorage.getItem('recently_played_songs');
@@ -107,7 +118,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
     try {
       const rc = await AsyncStorage.getItem('recently_played_collections');
       let list = rc ? JSON.parse(rc) : [];
-      list = [item, ...list.filter((c: any) => c.id !== item.id)].slice(0, 10);
+      list =[item, ...list.filter((c: any) => c.id !== item.id)].slice(0, 10);
       await AsyncStorage.setItem('recently_played_collections', JSON.stringify(list));
       setRecentlyPlayedCollections(list);
     } catch (e) {}
@@ -137,6 +148,11 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
     if (isNavAnimating.current || navStack.length <= 1) return;
     isNavAnimating.current = true;
     panX.setValue(0); 
+    
+    setSearchQuery('');
+    setIsSearching(false);
+    Keyboard.dismiss();
+
     const prev = navStack.length - 2;
     Animated.spring(navAnim, { toValue: prev, useNativeDriver: true, overshootClamping: true, stiffness: 400, damping: 35 }).start(() => {
       setNavStack(navStack.slice(0, -1));
@@ -173,7 +189,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
         <View style={styles.navHeaderLeft}>
             {navStack.length > 1 && (
                 <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={popView}>
-                    <Animated.View style={{ transform: [{ scale: backButtonScale }] }}>
+                    <Animated.View style={{ transform:[{ scale: backButtonScale }] }}>
                         <View style={{ 
                             width: 36, height: 36, borderRadius: 18, overflow: 'hidden', 
                             justifyContent: 'center', alignItems: 'center',
@@ -194,7 +210,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
   const onPlayCollectionPress = (songs: any[], shuffle: boolean) => {
     let collectionItem: any;
     if (currentSelectionType === 'PLAYLIST') {
-      collectionItem = { type: 'PLAYLIST', data: currentPlaylist, id: currentPlaylist.playlistName, art: getPlaylistFirstArt(currentPlaylist) };
+      collectionItem = { type: 'PLAYLIST', data: currentPlaylist, id: currentPlaylist.id, art: getPlaylistFirstArt(currentPlaylist) };
     } else if (currentSelectionType === 'ALBUM') {
       collectionItem = { type: 'ALBUM', data: currentAlbum, id: `${currentAlbum.album}:::${currentAlbum.artist}`, art: currentAlbum.coverArt ? {uri: currentAlbum.coverArt} : DEFAULT_ICON };
     } else if (currentSelectionType === 'ARTIST') {
@@ -204,7 +220,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
       collectionItem = { type: 'ARTIST', data: artistData, id: currentArtist, art };
     }
     if (collectionItem) saveCollectionToHistory(collectionItem);
-    startQueue(songs, 0, shuffle, 'OFF');
+    startQueue(songs, undefined, shuffle);
   };
 
   const renderMenu = () => (
@@ -226,28 +242,42 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
             recentlyPlayedCollections={recentlyPlayedCollections} 
             dynamicStyles={dynamicStyles} 
             themeColor={themeColor}
-            onPlaySong={(s:any)=>startQueue([s],0,false,'ONE')} 
+            onPlaySong={(s:any)=>startQueue([s], s, undefined)} 
             onPlayCollection={(item: any) => {
-                let songs: any[] = [];
+                let songs: any[] =[];
                 if (item.type === 'PLAYLIST') {
                 songs = item.data.isAll ? localLibrary : localLibrary.filter((s:any) => item.data.music?.includes(s.musicFilename.split(/[\\/]/).pop()));
+                const sortBy = item.data.sortBy || 'title';
+                const sortDesc = item.data.sortDesc || false;
+                songs.sort((a, b) => {
+                  let valA = a[sortBy] || '';
+                  let valB = b[sortBy] || '';
+                  if (['track', 'disc', 'year', 'bpm'].includes(sortBy)) {
+                    valA = parseInt(valA) || 0; valB = parseInt(valB) || 0;
+                  } else {
+                    valA = String(valA).toLowerCase(); valB = String(valB).toLowerCase();
+                  }
+                  if (valA < valB) return sortDesc ? 1 : -1;
+                  if (valA > valB) return sortDesc ? -1 : 1;
+                  return 0;
+                });
                 } else if (item.type === 'ALBUM') {
                 songs = localLibrary.filter((s:any) => s.album === item.data.album && s.artist === item.data.artist);
                 } else if (item.type === 'ARTIST') {
                 songs = localLibrary.filter((s:any) => s.artist === item.data.artistName);
                 }
-                startQueue(songs, 0, false, 'OFF');
+                startQueue(songs, undefined, false);
                 saveCollectionToHistory(item);
             }}
             />
         }
-        contentContainerStyle={{paddingBottom: 240}}
+        contentContainerStyle={{paddingBottom: 180}} // ★ 修正: 120 -> 180 (ミニプレイヤーに隠れないように)
         />
     </View>
   );
 
   const renderCategory = (category: string) => {
-    const data = category === 'PLAYLISTS' ? [{playlistName: 'すべての楽曲', isAll: true}, ...localPlaylists] : category === 'ALBUMS' ? albumsList : artistsList;
+    const data = category === 'PLAYLISTS' ?[{playlistName: 'すべての楽曲', isAll: true, id: 'all_songs'}, ...localPlaylists] : category === 'ALBUMS' ? albumsList : artistsList;
     return (
       <View style={{flex: 1, backgroundColor: dynamicStyles.bg}}>
         {renderHeader(category === 'PLAYLISTS' ? 'プレイリスト' : category === 'ALBUMS' ? 'アルバム' : 'アーティスト')}
@@ -280,25 +310,46 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
                 </TouchableOpacity>
             );
           }}
-          contentContainerStyle={{paddingBottom: 240}}
+          contentContainerStyle={{paddingBottom: 180}} // ★ 修正: 120 -> 180
         />
       </View>
     );
   };
 
   const renderSongList = () => {
-    let songs: any[] = [];
+    let songs: any[] =[];
     let heroArtSource: any = DEFAULT_ICON;
     let heroTitle = "";
     let heroSubtitle = "";
 
     if (currentSelectionType === 'PLAYLIST') {
       songs = currentPlaylist.isAll ? localLibrary : localLibrary.filter((s:any) => currentPlaylist.music?.includes(s.musicFilename.split(/[\\/]/).pop()));
+      
+      const sortBy = currentPlaylist.sortBy || 'title';
+      const sortDesc = currentPlaylist.sortDesc || false;
+      
+      songs.sort((a, b) => {
+        let valA = a[sortBy] || '';
+        let valB = b[sortBy] || '';
+
+        if (['track', 'disc', 'year', 'bpm'].includes(sortBy)) {
+          valA = parseInt(valA) || 0;
+          valB = parseInt(valB) || 0;
+        } else {
+          valA = String(valA).toLowerCase();
+          valB = String(valB).toLowerCase();
+        }
+
+        if (valA < valB) return sortDesc ? 1 : -1;
+        if (valA > valB) return sortDesc ? -1 : 1;
+        return 0;
+      });
+
       heroArtSource = getPlaylistFirstArt(currentPlaylist);
       heroTitle = currentPlaylist.playlistName;
     } else if (currentSelectionType === 'ALBUM') {
       songs = localLibrary.filter((s:any) => s.album === currentAlbum.album && s.artist === currentAlbum.artist);
-      songs.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ja'));
+      songs.sort((a, b) => (a.track || 0) - (b.track || 0)); 
       heroArtSource = currentAlbum.coverArt ? {uri: currentAlbum.coverArt} : DEFAULT_ICON;
       heroTitle = currentAlbum.album;
       heroSubtitle = currentAlbum.artist;
@@ -308,13 +359,54 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
       heroArtSource = (songs.length > 0 && songs[0].localImageUri) ? { uri: songs[0].localImageUri } : DEFAULT_ICON;
       heroTitle = currentArtist || "";
     }
+
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        songs = songs.filter(song => 
+            song.title?.toLowerCase().includes(q) || 
+            song.artist?.toLowerCase().includes(q) || 
+            song.album?.toLowerCase().includes(q)
+        );
+    }
     
     const hasBlurBackground = heroArtSource !== DEFAULT_ICON;
 
-    const HeroSection = () => {
-        const landscapeArtSize = height * 0.4;
-        return (
-            <View style={isLandscape ? { padding: 10, alignItems: 'center', width: '100%' } : styles.plHero}>
+    const onFocusSearch = () => {
+        setIsSearching(true);
+    };
+
+    const onCancelSearch = () => {
+        setIsSearching(false); 
+        setSearchQuery(''); 
+        Keyboard.dismiss(); 
+    };
+
+    const searchBarElement = (
+        <View style={{ paddingHorizontal: 20, paddingVertical: 10, width: '100%', height: 60, justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)', borderRadius: 20, paddingHorizontal: 15, height: 40 }}>
+                <Ionicons name="search" size={18} color={dynamicStyles.subText} style={{ marginRight: 10 }} />
+                <TextInput
+                    style={{ flex: 1, color: dynamicStyles.text, fontSize: 16 }}
+                    placeholder="曲名、アーティスト..."
+                    placeholderTextColor={dynamicStyles.subText}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    onFocus={onFocusSearch}
+                    onBlur={() => { if (!searchQuery) setIsSearching(false); }}
+                />
+                {isSearching && (
+                    <TouchableOpacity onPress={onCancelSearch}>
+                        <Ionicons name="close-circle" size={20} color={dynamicStyles.subText} style={{ marginLeft: 10 }} />
+                    </TouchableOpacity>
+                )}
+            </View>
+        </View>
+    );
+
+    const landscapeArtSize = height * 0.4;
+    const heroSectionElement = isSearching ? null : (
+        <View style={isLandscape ? { padding: 10, alignItems: 'center', width: '100%' } : styles.plHero}>
+            {currentSelectionType !== 'ARTIST' && (
                 <Image 
                     source={heroArtSource} 
                     style={isLandscape 
@@ -322,53 +414,53 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
                         : styles.plHeroArt
                     } 
                 />
-                <Text 
+            )}
+            <Text 
+                style={[
+                    styles.plHeroTitle, 
+                    { color: dynamicStyles.text, marginTop: isLandscape ? 10 : 15 },
+                    isLandscape && { fontSize: 18 }
+                ]} 
+                numberOfLines={1}
+            >
+                {heroTitle}
+            </Text>
+            
+            <View style={{
+                flexDirection: 'row', 
+                width: '100%', 
+                justifyContent: 'center', 
+                gap: 10, 
+                marginTop: 15,
+                paddingHorizontal: 10
+            }}>
+                <TouchableOpacity 
                     style={[
-                        styles.plHeroTitle, 
-                        { color: dynamicStyles.text, marginTop: isLandscape ? 10 : 15 },
-                        isLandscape && { fontSize: 18 }
+                        styles.plMainBtn, 
+                        { backgroundColor: hasBlurBackground ? 'transparent' : dynamicStyles.card, overflow: 'hidden' },
+                        hasBlurBackground && { shadowOpacity: 0, elevation: 0, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }
                     ]} 
-                    numberOfLines={1}
+                    onPress={() => onPlayCollectionPress(songs, false)}
                 >
-                    {heroTitle}
-                </Text>
-                
-                <View style={{
-                    flexDirection: 'row', 
-                    width: '100%', 
-                    justifyContent: 'center', 
-                    gap: 10, 
-                    marginTop: 15,
-                    paddingHorizontal: 10
-                }}>
-                    <TouchableOpacity 
-                        style={[
-                            styles.plMainBtn, 
-                            { backgroundColor: hasBlurBackground ? 'transparent' : dynamicStyles.card, overflow: 'hidden' },
-                            hasBlurBackground && { shadowOpacity: 0, elevation: 0, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }
-                        ]} 
-                        onPress={() => onPlayCollectionPress(songs, false)}
-                    >
-                        {hasBlurBackground && <BlurView intensity={isDark ? 30 : 80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
-                        <Ionicons name="play" size={20} color={isDark ? '#fff' : '#000'} />
-                        <Text style={[styles.plMainBtnText, {color: isDark ? '#fff' : '#000', fontSize: 14}]}>再生</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[
-                            styles.plMainBtn, 
-                            { backgroundColor: hasBlurBackground ? 'transparent' : dynamicStyles.card, overflow: 'hidden' },
-                            hasBlurBackground && { shadowOpacity: 0, elevation: 0, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }
-                        ]} 
-                        onPress={() => onPlayCollectionPress(songs, true)}
-                    >
-                        {hasBlurBackground && <BlurView intensity={isDark ? 30 : 80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
-                        <Ionicons name="shuffle" size={20} color={isDark ? '#fff' : '#000'} />
-                        <Text style={[styles.plMainBtnText, {color: isDark ? '#fff' : '#000', fontSize: 14}]}>シャッフル</Text>
-                    </TouchableOpacity>
-                </View>
+                    {hasBlurBackground && <BlurView intensity={isDark ? 30 : 80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
+                    <Ionicons name="play" size={20} color={isDark ? '#fff' : '#000'} />
+                    <Text style={[styles.plMainBtnText, {color: isDark ? '#fff' : '#000', fontSize: 14}]}>再生</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[
+                        styles.plMainBtn, 
+                        { backgroundColor: hasBlurBackground ? 'transparent' : dynamicStyles.card, overflow: 'hidden' },
+                        hasBlurBackground && { shadowOpacity: 0, elevation: 0, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }
+                    ]} 
+                    onPress={() => onPlayCollectionPress(songs, true)}
+                >
+                    {hasBlurBackground && <BlurView intensity={isDark ? 30 : 80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
+                    <Ionicons name="shuffle" size={20} color={isDark ? '#fff' : '#000'} />
+                    <Text style={[styles.plMainBtnText, {color: isDark ? '#fff' : '#000', fontSize: 14}]}>シャッフル</Text>
+                </TouchableOpacity>
             </View>
-        );
-    };
+        </View>
+    );
 
     return (
         <View style={{flex: 1}}>
@@ -386,15 +478,21 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
             
             {isLandscape ? (
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={{ flex: 1, justifyContent: 'center' }}>
-                        <HeroSection />
-                    </View>
-                    <View style={{ flex: 1.5 }}>
+                    {!isSearching && (
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            {heroSectionElement}
+                        </View>
+                    )}
+                    <View style={{ flex: isSearching ? 1 : 1.5 }}>
                         <FlatList
+                            ref={flatListRefLandscape} 
                             data={songs}
                             keyExtractor={(item) => item.localMusicUri}
-                            renderItem={({item, index}) => (
-                                <TouchableOpacity style={[styles.songRow, {borderBottomWidth:0, backgroundColor: 'transparent' }]} onPress={() => startQueue(songs, index, false, 'OFF')}>
+                            ListHeaderComponent={searchBarElement}
+                            snapToOffsets={[0, 60]} 
+                            snapToEnd={false} 
+                            renderItem={({item}) => (
+                                <TouchableOpacity style={[styles.songRow, {borderBottomWidth:0, backgroundColor: 'transparent' }]} onPress={() => startQueue(songs, item, undefined)}>
                                     <Image source={item.localImageUri ? {uri: item.localImageUri} : DEFAULT_ICON} style={styles.smallArt} />
                                     <View style={{flex: 1}}>
                                         <Text style={[styles.songTitle, {color: dynamicStyles.text}]} numberOfLines={1}>{item.title}</Text>
@@ -402,17 +500,25 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
                                     </View>
                                 </TouchableOpacity>
                             )}
-                            contentContainerStyle={{paddingBottom: 150}}
+                            contentContainerStyle={{paddingBottom: 100}} // ★ 修正: 80 -> 100
                         />
                     </View>
                 </View>
             ) : (
                 <FlatList
+                    ref={flatListRefPortrait} 
                     data={songs}
                     keyExtractor={(item) => item.localMusicUri}
-                    ListHeaderComponent={<HeroSection />}
-                    renderItem={({item, index}) => (
-                        <TouchableOpacity style={[styles.songRow, {borderBottomWidth:0, backgroundColor: 'transparent' }]} onPress={() => startQueue(songs, index, false, 'OFF')}>
+                    ListHeaderComponent={
+                        <View>
+                            {searchBarElement}
+                            {heroSectionElement}
+                        </View>
+                    }
+                    snapToOffsets={[0, 60]} 
+                    snapToEnd={false} 
+                    renderItem={({item}) => (
+                        <TouchableOpacity style={[styles.songRow, {borderBottomWidth:0, backgroundColor: 'transparent' }]} onPress={() => startQueue(songs, item, undefined)}>
                             <Image source={item.localImageUri ? {uri: item.localImageUri} : DEFAULT_ICON} style={styles.smallArt} />
                             <View style={{flex: 1}}>
                                 <Text style={[styles.songTitle, {color: dynamicStyles.text}]} numberOfLines={1}>{item.title}</Text>
@@ -420,7 +526,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
                             </View>
                         </TouchableOpacity>
                     )}
-                    contentContainerStyle={{paddingBottom: 240}}
+                    contentContainerStyle={{paddingBottom: 180}} // ★ 修正: 120 -> 180
                 />
             )}
         </View>
@@ -431,7 +537,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
     <View style={{flex: 1, backgroundColor: 'transparent'}} {...navPanResponder.panHandlers}>
       <Animated.View style={[StyleSheet.absoluteFill, { 
         zIndex: 1,
-        transform: [{ 
+        transform:[{ 
           translateX: Animated.add(
             navAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -width] }),
             panX
@@ -445,7 +551,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
         <Animated.View 
             style={[StyleSheet.absoluteFill, { 
               zIndex: 2,
-              transform: [{ 
+              transform:[{ 
                 translateX: Animated.add(
                   navAnim.interpolate({ inputRange: [0, 1, 2], outputRange: [width, 0, -width] }),
                   panX
@@ -461,7 +567,7 @@ export const Library = ({ dynamicStyles, themeColor, startQueue, currentSong, lo
         <Animated.View 
             style={[StyleSheet.absoluteFill, { 
               zIndex: 3,
-              transform: [{
+              transform:[{
                 translateX: Animated.add(
                   navAnim.interpolate({ inputRange: [1, 2], outputRange: [width, 0] }),
                   panX
